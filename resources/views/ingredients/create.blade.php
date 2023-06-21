@@ -16,7 +16,7 @@
                 <label for="name">Description:</label>
                 <input type="text" name="description" id="description" class="form-control" required>
             </div>
-            <button type="submit" class="btn btn-primary">Update</button>
+            <button type="submit" class="btn btn-primary">Create</button>
         </form>
     </div>
 @endsection
