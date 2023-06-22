@@ -37,27 +37,37 @@
                     <th>Ingredient</th>
                     <th>Count</th>
                     <th>Unit</th>
+                    @if (isset($recipe))
+                        <th>Action</th>
+                    @endif
                 </tr>
                 </thead>
                 <tbody>
-                @foreach ($recipe->ingredients as $ingredient)
-                    @php
-                        $recipeIngredient = $ingredient->pivot;
-                    @endphp
-                    <tr>
-                        <td>{{ $ingredient->name }}</td>
-                        <td>
-                            <input type="number" name="count[]" value="{{ $recipeIngredient->count }}" required>
-                        </td>
-                        <td>
-                            <select name="unit[]" required>
-                                <option value="g" {{ $recipeIngredient->unit === 'g' ? 'selected' : '' }}>Grams</option>
-                                <option value="p" {{ $recipeIngredient->unit === 'p' ? 'selected' : '' }}>Pounds</option>
-                                <option value="l" {{ $recipeIngredient->unit === 'l' ? 'selected' : '' }}>Liters</option>
-                            </select>
-                        </td>
-                    </tr>
-                @endforeach
+                @if ($recipe && isset($recipe->ingredients))
+                    @foreach ($recipe->ingredients as $ingredient)
+                        @php
+                            $recipeIngredient = $ingredient->pivot;
+                        @endphp
+                        <tr>
+                            <td>{{ $ingredient->name }}</td>
+                            <td>
+                                <input type="number" name="count[]" value="{{ $recipeIngredient->count }}" required>
+                            </td>
+                            <td>
+                                <select name="unit[]" required>
+                                    <option value="g" {{ $recipeIngredient->unit === 'g' ? 'selected' : '' }}>Grams</option>
+                                    <option value="p" {{ $recipeIngredient->unit === 'p' ? 'selected' : '' }}>Pounds</option>
+                                    <option value="l" {{ $recipeIngredient->unit === 'l' ? 'selected' : '' }}>Liters</option>
+                                </select>
+                            </td>
+                            @if (isset($recipe))
+                                <td>
+                                    <button type="button" class="btn btn-danger" onclick="deleteIngredientRow(this)">Delete</button>
+                                </td>
+                            @endif
+                        </tr>
+                    @endforeach
+                @endif
                 </tbody>
             </table>
 
@@ -84,6 +94,7 @@
         var countInput = document.createElement("input");
         countInput.type = "number";
         countInput.name = "count[]";
+        countInput.value = "";
         countInput.required = true;
 
         var unitSelect = document.createElement("select");
@@ -94,5 +105,10 @@
         cell1.appendChild(ingredientSelect);
         cell2.appendChild(countInput);
         cell3.appendChild(unitSelect);
+    }
+
+    function deleteIngredientRow(button) {
+        var row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
     }
 </script>

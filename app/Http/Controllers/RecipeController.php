@@ -11,9 +11,17 @@ class RecipeController extends Controller
 {
     public function index()
     {
-        $recipes = Recipe::all();
-        return view('recipes.index', compact('recipes'));
+        if (auth()->check()) {
+            $recipesByOwner = Recipe::where('owner_id', auth()->user()->id)->get();
+        } else {
+            $recipesByOwner = collect(); // Empty collection when not logged in
+        }
+
+        $publicRecipes = Recipe::where('status', true)->get();
+
+        return view('recipes.index', compact('recipesByOwner', 'publicRecipes'));
     }
+
 
     public function create()
     {
@@ -60,10 +68,13 @@ class RecipeController extends Controller
         return redirect()->route('recipes.index')->with('success', 'Recipe created successfully.');
     }
 
-    public function edit(Recipe $recipe)
+    public function edit($id)
     {
+        $recipe = Recipe::findOrFail($id);
         $ingredients = Ingredient::all();
-        return view('recipes.edit', compact('recipe', 'ingredients'));
+        $recipeIngredients = $recipe->ingredients()->get();
+
+        return view('recipes.edit', compact('recipe', 'ingredients', 'recipeIngredients'));
     }
 
     public function update(Request $request, Recipe $recipe)

@@ -6,13 +6,8 @@ use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-});
-Route::get('/home', function () {
-    return view('home');
-});
-
+Route::get('/', [RecipeController::class, 'index'])->name('home');
+Route::get('/home', [RecipeController::class, 'index'])->name('home');
 
 // Authentication routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
