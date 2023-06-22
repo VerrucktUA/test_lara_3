@@ -29,7 +29,9 @@ Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destro
 Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
 Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
 Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
+Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show'); // New show route
 Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
 Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
 Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+
 

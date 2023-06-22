@@ -1,12 +1,15 @@
 <?php
 
+namespace Tests\Feature;
+
 use App\Models\Ingredient;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\TestCase;
+use Tests\CreatesApplication;
 
 class IngredientTest extends TestCase
 {
-    use WithFaker;
+    use CreatesApplication, WithFaker;
 
     public function testIndex()
     {
@@ -64,5 +67,15 @@ class IngredientTest extends TestCase
 
         $response->assertRedirect('/ingredients');
         $this->assertDatabaseHas('ingredients', $updatedData);
+    }
+
+    public function testDestroy()
+    {
+        $ingredient = Ingredient::factory()->create();
+
+        $response = $this->delete('/ingredients/'.$ingredient->id);
+
+        $response->assertRedirect('/ingredients');
+        $this->assertDatabaseMissing('ingredients', ['id' => $ingredient->id]);
     }
 }

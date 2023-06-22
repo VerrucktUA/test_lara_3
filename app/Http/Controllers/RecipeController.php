@@ -6,6 +6,8 @@ use App\Models\Recipe;
 use App\Models\RecipeIngredient;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
 
 class RecipeController extends Controller
 {
@@ -22,7 +24,6 @@ class RecipeController extends Controller
         return view('recipes.index', compact('recipesByOwner', 'publicRecipes'));
     }
 
-
     public function create()
     {
         $ingredients = Ingredient::all();
@@ -31,15 +32,19 @@ class RecipeController extends Controller
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'name' => 'required',
             'description' => 'required',
-            'status' => '',
-            'existing_ingredient.*' => 'required',
-            'count.*' => 'required',
+            'existing_ingredient' => 'required|array|min:1', // At least one ingredient is required
+            'existing_ingredient.*' => [
+                'required',
+                Rule::exists('ingredients', 'id'),
+            ],
+            'count' => 'required|array|min:1',
+            'count.*' => 'required|numeric',
+            'unit' => 'required|array|min:1',
             'unit.*' => 'required',
         ]);
-
 
         $recipe = Recipe::create([
             'name' => $request->input('name'),
@@ -52,20 +57,26 @@ class RecipeController extends Controller
         $counts = $request->input('count');
         $units = $request->input('unit');
 
-        for ($i = 0; $i < count($existingIngredients); $i++) {
-            $ingredient = Ingredient::find($existingIngredients[$i]);
+        foreach ($existingIngredients as $key => $existingIngredient) {
+            $ingredient = Ingredient::find($existingIngredient);
 
             if ($ingredient) {
                 $recipeIngredient = new RecipeIngredient();
                 $recipeIngredient->recipe_id = $recipe->id;
                 $recipeIngredient->ingredient_id = $ingredient->id;
-                $recipeIngredient->count = $counts[$i];
-                $recipeIngredient->unit = $units[$i];
+                $recipeIngredient->count = $counts[$key];
+                $recipeIngredient->unit = $units[$key];
                 $recipeIngredient->save();
             }
         }
 
         return redirect()->route('recipes.index')->with('success', 'Recipe created successfully.');
+    }
+
+    public function show($id)
+    {
+        $recipe = Recipe::findOrFail($id);
+        return view('recipes.show', compact('recipe'));
     }
 
     public function edit($id)
@@ -79,12 +90,16 @@ class RecipeController extends Controller
 
     public function update(Request $request, Recipe $recipe)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'name' => 'required',
             'description' => 'required',
-            'existing_ingredient.*' => 'required',
-            'count.*' => 'required',
-            'unit.*' => 'required',
+            'ingredients' => 'required|array|min:1', // At least one ingredient is required
+            'ingredients.*.id' => [
+                'required',
+                Rule::exists('ingredients', 'id'),
+            ],
+            'ingredients.*.count' => 'required|numeric',
+            'ingredients.*.unit' => 'required',
         ]);
 
         $recipe->name = $request->input('name');

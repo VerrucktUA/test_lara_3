@@ -54,9 +54,9 @@
                     </td>
                     <td>
                         <select name="unit[]" required>
-                            <option value="g" {{ old('unit') == 'g' ? 'selected' : '' }}>Grams</option>
-                            <option value="p" {{ old('unit') == 'p' ? 'selected' : '' }}>Pounds</option>
-                            <option value="l" {{ old('unit') == 'l' ? 'selected' : '' }}>Liters</option>
+                            <option value="g">Grams</option>
+                            <option value="p">Pounds</option>
+                            <option value="l">Liters</option>
                         </select>
                     </td>
                 </tr>
@@ -70,31 +70,32 @@
     </div>
 @endsection
 
-<script>
-    function addIngredientRow() {
-        var table = document.getElementById("ingredients-table");
-        var row = table.insertRow();
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
 
-        var ingredientSelect = document.createElement("select");
-        ingredientSelect.name = "existing_ingredient[]";
-        ingredientSelect.required = true;
-        ingredientSelect.innerHTML = '<option value="">Select Ingredient</option>@foreach ($ingredients as $ingredient)<option value="{{ $ingredient->id }}">{{ $ingredient->name }}</option>@endforeach';
+    <script>
+        function addIngredientRow() {
+            var table = document.getElementById("ingredients-table");
+            var row = table.insertRow();
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
 
-        var countInput = document.createElement("input");
-        countInput.type = "number";
-        countInput.name = "count[]";
-        countInput.required = true;
+            var ingredientSelect = document.createElement("select");
+            ingredientSelect.name = "existing_ingredient[]";
+            ingredientSelect.required = true;
+            ingredientSelect.innerHTML = '<?php foreach ($ingredients as $ingredient): ?><option value="{{ $ingredient->id }}">{{ $ingredient->name }}</option><?php endforeach; ?>';
 
-        var unitSelect = document.createElement("select");
-        unitSelect.name = "unit[]";
-        unitSelect.required = true;
-        unitSelect.innerHTML = '<option value="g">Grams</option><option value="p">Pounds</option><option value="l">Liters</option>';
+            var countInput = document.createElement("input");
+            countInput.type = "number";
+            countInput.name = "count[]";
+            countInput.required = true;
 
-        cell1.appendChild(ingredientSelect);
-        cell2.appendChild(countInput);
-        cell3.appendChild(unitSelect);
-    }
-</script>
+            var unitSelect = document.createElement("select");
+            unitSelect.name = "unit[]";
+            unitSelect.required = true;
+            unitSelect.innerHTML = '<option value="g">Grams</option><option value="p">Pounds</option><option value="l">Liters</option>';
+
+            cell1.appendChild(ingredientSelect);
+            cell2.appendChild(countInput);
+            cell3.appendChild(unitSelect);
+        }
+    </script>
